@@ -1,15 +1,26 @@
-
 function preInit() {
-  blockManager.register(function(){
+  var textureExplosiveBottom = new nova.render.texture.BlockTexture("icbm", "explosive_bottom_1");
+  var textureExplosiveSide = new nova.render.texture.BlockTexture("icbm", "explosive_condensed_side");
+  var textureExplosiveTop = new nova.render.texture.BlockTexture("icbm", "explosive_condensed_top");
+
+  renderManager.registerTexture(textureExplosiveBottom);
+  renderManager.registerTexture(textureExplosiveSide);
+  renderManager.registerTexture(textureExplosiveTop);
+
+  blockManager.register(function() {
     var block = new nova.block.JSBlock("Condensed Explosive");
 
     block.add(new nova.component.Category("ICBM"));
 
-    var texture = new nova.render.texture.BlockTexture("minecraft", "tnt_side");
-
     block
       .add(new nova.block.component.StaticBlockRenderer(block))
-      .setTexture(texture);
+      .setTexture(function(side) {
+        if (side == nova.util.Direction.UP)
+          return Optional.of(textureExplosiveTop)
+        if (side == nova.util.Direction.DOWN)
+          return Optional.of(textureExplosiveBottom);
+        return Optional.of(textureExplosiveSide)
+      });
 
     block.add(new nova.component.renderer.ItemRenderer(block));
 
@@ -24,12 +35,12 @@ function preInit() {
 }
 
 function explode(world, position, strength) {
-  for(var x = -strength; x < strength; x++) {
-    for(var y = -strength; y < strength; y++) {
-      for(var z = -strength; z < strength; z++){
+  for (var x = -strength; x < strength; x++) {
+    for (var y = -strength; y < strength; y++) {
+      for (var z = -strength; z < strength; z++) {
         var checkPos = position.add(new Vector3D(x, y, z));
 
-        if(checkPos.distance(position) <= strength){
+        if (checkPos.distance(position) <= strength) {
           world.removeBlock(Vector3DUtil.floor(checkPos));
         }
       }
