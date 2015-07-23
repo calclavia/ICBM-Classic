@@ -8,6 +8,12 @@ Mod URL: https://cdn.rawgit.com/calclavia/ICBM-Classic/ltm/calclavia-ICBM.js
 * Node JS
 * LTM Engine
 
+Install Node JS and type the following command in the repository directory:
+
+```
+npm init
+```
+
 ### Founder
 * Calclavia (Henry)
 

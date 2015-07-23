@@ -1,0 +1,20 @@
+{
+  "name": "icbm",
+  "version": "1.0.0",
+  "description": "ICBM is a voxel mod that brings explosives, rockets and missiles to Minecraft.",
+  "main": "calclavia-ICBM.js",
+  "dependencies": {
+    "eslint": "^0.24.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/calclavia/ICBM-Classic.git"
+  },
+  "author": "",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/calclavia/ICBM-Classic/issues"
+  },
+  "homepage": "https://github.com/calclavia/ICBM-Classic#readme"
+}
