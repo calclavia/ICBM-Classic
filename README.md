@@ -1,7 +1,7 @@
 # ICBM Classic
 A classic version of ICBM voxel mod built on top of the Learn To Mod platform, written in NOVA JavaScript.
 
-Mod URL: https://cdn.rawgit.com/calclavia/ICBM-Classic/ltm/calclavia-ICBM.js
+Mod URL: https://raw.githubusercontent.com/calclavia/ICBM-Classic/ltm/calclavia-ICBM.js (Use this when launching LTM)
 
 
 ## Set Up
