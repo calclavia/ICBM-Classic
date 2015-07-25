@@ -1,3 +1,5 @@
+var dependencies = ["https://github.com/calclavia/ICBM-Classic/blob/ltm/icbm.zip"];
+
 function preInit() {
   var textureExplosiveBottom = new nova.render.texture.BlockTexture("icbm", "explosive_bottom_1");
   var textureExplosiveSide = new nova.render.texture.BlockTexture("icbm", "explosive_condensed_side");
