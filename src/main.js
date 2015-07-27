@@ -3,16 +3,16 @@ var dependencies = ["https://raw.githubusercontent.com/calclavia/ICBM-Classic/lt
 import Explosion from "explode";
 
 function preInit() {
-  var textureExplosiveBottom = new nova.render.texture.BlockTexture("icbm", "explosive_bottom_1");
-  var textureExplosiveSide = new nova.render.texture.BlockTexture("icbm", "explosive_condensed_side");
-  var textureExplosiveTop = new nova.render.texture.BlockTexture("icbm", "explosive_condensed_top");
+  const textureExplosiveBottom = new nova.render.texture.BlockTexture("icbm", "explosive_bottom_1");
+  const textureExplosiveSide = new nova.render.texture.BlockTexture("icbm", "explosive_condensed_side");
+  const textureExplosiveTop = new nova.render.texture.BlockTexture("icbm", "explosive_condensed_top");
 
   renderManager.registerTexture(textureExplosiveBottom);
   renderManager.registerTexture(textureExplosiveSide);
   renderManager.registerTexture(textureExplosiveTop);
 
   blockManager.register(function() {
-    var block = new nova.block.JSBlock("Condensed Explosive");
+    const block = new nova.block.JSBlock("Condensed Explosive");
 
     block.add(new nova.component.Category("ICBM"));
 
