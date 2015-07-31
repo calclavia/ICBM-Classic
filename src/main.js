@@ -17,14 +17,18 @@ function preInit() {
     block.add(new nova.component.Category("ICBM"));
 
     block
-      .add(new nova.block.component.StaticBlockRenderer(block))
-      .setTexture(function(side) {
-        if (side == nova.util.Direction.UP)
-          return Optional.of(textureExplosiveTop)
-        if (side == nova.util.Direction.DOWN)
-          return Optional.of(textureExplosiveBottom);
-        return Optional.of(textureExplosiveSide)
-      });
+      .add(new nova.component.renderer.StaticRenderer(block))
+      .onRender(
+        new nova.render.pipeline.BlockRenderStream(block)
+          .withTexture(function(side) {
+            if (side == nova.util.Direction.UP)
+              return Optional.of(textureExplosiveTop)
+            if (side == nova.util.Direction.DOWN)
+              return Optional.of(textureExplosiveBottom);
+            return Optional.of(textureExplosiveSide)
+          })
+          .build()
+      );
 
     block.add(new nova.component.renderer.ItemRenderer(block));
 

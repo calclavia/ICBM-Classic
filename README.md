@@ -14,8 +14,9 @@ Install Node JS and type the following command in the repository directory:
 npm init
 ```
 
-### Founder
-* Calclavia (Henry)
+### Credits
+* Founder & Developer: Calclavia (Henry)
+* Sound: Freesound.org
 
 ICBM Classic is licensed under the Educational Public License (http://calclavia.com/educational-public-license).
 
