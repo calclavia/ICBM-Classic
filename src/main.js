@@ -17,7 +17,7 @@ function preInit() {
     block.add(new nova.component.Category("ICBM"));
 
     block
-      .add(new nova.component.renderer.StaticRenderer(block))
+      .add(new nova.component.renderer.StaticRenderer())
       .onRender(
         new nova.render.pipeline.BlockRenderStream(block)
         .withTexture(function(side) {
@@ -35,11 +35,38 @@ function preInit() {
     block.events
       .on(nova.block.Block.RightClickEvent.class)
       .bind(function(evt) {
-        new Explosion(evt.entity.world(), block.position().add(new Vector3D(0.5, 0.5, 0.5)), 3).doExplosion();
+        evt.entity.world()
+          .addEntity(entityManager.getFactory("Condensed Explosive").get())
+          .setPosition(block.position().add(new Vector3D(0.5, 0.5, 0.5)));
+
+        evt.entity.world().removeBlock(block.position());
+        //new Explosion(evt.entity.world(), block.position().add(new Vector3D(0.5, 0.5, 0.5)), 3).doExplosion();
       });
 
     return block;
   });
+
+  entityManager.register(function(){
+    const entity = new nova.entity.JSEntity("Condensed Explosive")
+    {
+      this.update= function(deltaTime){
+        print(deltaTime);
+      }
+    }
+
+    entity
+      .add(new nova.component.renderer.DynamicRenderer())
+      .onRender(function(model){
+        blockManager
+          .get("Condensed Explosive")
+          .get()
+          .get(nova.component.renderer.StaticRenderer.class)
+          .onRender
+          .accept(model);
+      });
+
+    return entity;
+  })
 
   const codensedExplosive = itemManager.getItem("Condensed Explosive").get().makeItem();
   recipeManager.addRecipe(new nova.recipes.crafting.ShapelessCraftingRecipe(
