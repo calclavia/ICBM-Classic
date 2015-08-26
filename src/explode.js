@@ -13,11 +13,22 @@ export default class Explosion {
 
             if (checkPos.distance(this.position) <= this.strength) {
               this.world.removeBlock(Vector3DUtil.floor(checkPos));
+              this.world
+                .addClientEntity(entityManager.getFactory("minecraft:smoke").get())
+                .setPosition(checkPos);
+              this.world
+                .addClientEntity(entityManager.getFactory("minecraft:explode").get())
+                .setPosition(checkPos);
             }
           }
         }
       }
 
       this.world.playSoundAtPosition(this.position, new nova.sound.Sound("icbm", "explode-small").withVolume(2));
+
+      //Spawn particles
+      this.world
+        .addClientEntity(entityManager.getFactory("minecraft:largeexplode").get())
+        .setPosition(this.position);
     }
   }
