@@ -23,6 +23,7 @@ export default class Explosion {
           }
         }
       }
+      
 
       this.world.playSoundAtPosition(this.position, new nova.sound.Sound("icbm", "explode-small").withVolume(2));
 

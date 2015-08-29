@@ -35,28 +35,37 @@ function preInit() {
     block.events
       .on(nova.block.Block.RightClickEvent.class)
       .bind(function(evt) {
-        evt.entity.world()
-          .addEntity(entityManager.getFactory("Condensed Explosive").get())
-          .setPosition(block.position().add(new Vector3D(0.5, 0.5, 0.5)));
+        //if (networkManager.isServer()) {
+          evt.entity.world()
+            .addEntity(entityManager.getFactory("Condensed Explosive").get())
+            .setPosition(block.position().add(new Vector3D(0.5, 0.5, 0.5)));
 
-        evt.entity.world().removeBlock(block.position());
-        //new Explosion(evt.entity.world(), block.position().add(new Vector3D(0.5, 0.5, 0.5)), 3).doExplosion();
+          evt.entity.world().removeBlock(block.position());
+        //}
       });
 
     return block;
   });
 
-  entityManager.register(function(){
-    const entity = new nova.entity.JSEntity("Condensed Explosive")
-    {
-      this.update= function(deltaTime){
-        print(deltaTime);
+  entityManager.register(function() {
+    var EntityExplosive = Java.extend(nova.entity.JSEntity, {
+      time: 0,
+      update: function(deltaTime) {
+        this.time += deltaTime;
+        if (this.time >= 1) {
+          if (networkManager.isServer()) {
+            new Explosion(entity.world(), entity.position(), 3).doExplosion();
+          }
+          entity.world().removeEntity(entity);
+        }
       }
-    }
+    });
+
+    const entity = new EntityExplosive("Condensed Explosive");
 
     entity
       .add(new nova.component.renderer.DynamicRenderer())
-      .onRender(function(model){
+      .onRender(function(model) {
         blockManager
           .get("Condensed Explosive")
           .get()
@@ -65,15 +74,16 @@ function preInit() {
           .accept(model);
       });
 
+    entity.add(new nova.component.misc.Collider(entity));
+    entity.add(componentManager.make(nova.entity.component.RigidBody.class, entity));
     return entity;
-  })
+  });
 
   const codensedExplosive = itemManager.getItem("Condensed Explosive").get().makeItem();
   recipeManager.addRecipe(new nova.recipes.crafting.ShapelessCraftingRecipe(
-    codensedExplosive,
-    [
-        nova.recipes.crafting.ItemIngredient.forItem("minecraft:redstone"),
-        nova.recipes.crafting.ItemIngredient.forItem("minecraft:tnt")
+    codensedExplosive, [
+      nova.recipes.crafting.ItemIngredient.forItem("minecraft:redstone"),
+      nova.recipes.crafting.ItemIngredient.forItem("minecraft:tnt")
     ]
   ));
 }

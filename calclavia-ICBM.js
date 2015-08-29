@@ -1,1 +1,106 @@
-"use strict";function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function preInit(){var e=new nova.render.texture.BlockTexture("icbm","explosive_bottom_1"),t=new nova.render.texture.BlockTexture("icbm","explosive_condensed_side"),n=new nova.render.texture.BlockTexture("icbm","explosive_condensed_top");renderManager.registerTexture(e),renderManager.registerTexture(t),renderManager.registerTexture(n),blockManager.register(function(){var r=new nova.block.JSBlock("Condensed Explosive");return r.add(new nova.component.Category("ICBM")),r.add(new nova.component.renderer.StaticRenderer).onRender(new nova.render.pipeline.BlockRenderStream(r).withTexture(function(r){return r==nova.util.Direction.UP?Optional.of(n):r==nova.util.Direction.DOWN?Optional.of(e):Optional.of(t)}).build()),r.add(new nova.component.renderer.ItemRenderer(r)),r.events.on(nova.block.Block.RightClickEvent["class"]).bind(function(e){e.entity.world().addEntity(entityManager.getFactory("Condensed Explosive").get()).setPosition(r.position().add(new Vector3D(.5,.5,.5))),e.entity.world().removeBlock(r.position())}),r}),entityManager.register(function(){var e=new nova.entity.JSEntity("Condensed Explosive");return this.update=function(e){print(e)},e.add(new nova.component.renderer.DynamicRenderer).onRender(function(e){blockManager.get("Condensed Explosive").get().get(nova.component.renderer.StaticRenderer["class"]).onRender.accept(e)}),e});var r=itemManager.getItem("Condensed Explosive").get().makeItem();recipeManager.addRecipe(new nova.recipes.crafting.ShapelessCraftingRecipe(r,[nova.recipes.crafting.ItemIngredient.forItem("minecraft:redstone"),nova.recipes.crafting.ItemIngredient.forItem("minecraft:tnt")]))}var _createClass=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),Explosion=function(){function e(t,n,r){_classCallCheck(this,e),this.world=t,this.position=n,this.strength=r}return _createClass(e,[{key:"doExplosion",value:function(){for(var e=-this.strength;e<this.strength;e++)for(var t=-this.strength;t<this.strength;t++)for(var n=-this.strength;n<this.strength;n++){var r=this.position.add(new Vector3D(e,t,n));r.distance(this.position)<=this.strength&&(this.world.removeBlock(Vector3DUtil.floor(r)),this.world.addClientEntity(entityManager.getFactory("minecraft:smoke").get()).setPosition(r),this.world.addClientEntity(entityManager.getFactory("minecraft:explode").get()).setPosition(r))}this.world.playSoundAtPosition(this.position,new nova.sound.Sound("icbm","explode-small").withVolume(2)),this.world.addClientEntity(entityManager.getFactory("minecraft:largeexplode").get()).setPosition(this.position)}}]),e}(),dependencies=["https://raw.githubusercontent.com/calclavia/ICBM-Classic/ltm/icbm.zip"];
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Explosion = (function () {
+  function Explosion(world, position, strength) {
+    _classCallCheck(this, Explosion);
+
+    this.world = world;
+    this.position = position;
+    this.strength = strength;
+  }
+
+  _createClass(Explosion, [{
+    key: "doExplosion",
+    value: function doExplosion() {
+      for (var x = -this.strength; x < this.strength; x++) {
+        for (var y = -this.strength; y < this.strength; y++) {
+          for (var z = -this.strength; z < this.strength; z++) {
+            var checkPos = this.position.add(new Vector3D(x, y, z));
+
+            if (checkPos.distance(this.position) <= this.strength) {
+              this.world.removeBlock(Vector3DUtil.floor(checkPos));
+              this.world.addClientEntity(entityManager.getFactory("minecraft:smoke").get()).setPosition(checkPos);
+              this.world.addClientEntity(entityManager.getFactory("minecraft:explode").get()).setPosition(checkPos);
+            }
+          }
+        }
+      }
+
+      this.world.playSoundAtPosition(this.position, new nova.sound.Sound("icbm", "explode-small").withVolume(2));
+
+      //Spawn particles
+      this.world.addClientEntity(entityManager.getFactory("minecraft:largeexplode").get()).setPosition(this.position);
+    }
+  }]);
+
+  return Explosion;
+})();
+"use strict";
+
+var dependencies = ["https://raw.githubusercontent.com/calclavia/ICBM-Classic/ltm/icbm.zip"];
+
+function preInit() {
+  var textureExplosiveBottom = new nova.render.texture.BlockTexture("icbm", "explosive_bottom_1");
+  var textureExplosiveSide = new nova.render.texture.BlockTexture("icbm", "explosive_condensed_side");
+  var textureExplosiveTop = new nova.render.texture.BlockTexture("icbm", "explosive_condensed_top");
+
+  renderManager.registerTexture(textureExplosiveBottom);
+  renderManager.registerTexture(textureExplosiveSide);
+  renderManager.registerTexture(textureExplosiveTop);
+
+  blockManager.register(function () {
+    var block = new nova.block.JSBlock("Condensed Explosive");
+
+    block.add(new nova.component.Category("ICBM"));
+
+    block.add(new nova.component.renderer.StaticRenderer()).onRender(new nova.render.pipeline.BlockRenderStream(block).withTexture(function (side) {
+      if (side == nova.util.Direction.UP) return Optional.of(textureExplosiveTop);
+      if (side == nova.util.Direction.DOWN) return Optional.of(textureExplosiveBottom);
+      return Optional.of(textureExplosiveSide);
+    }).build());
+
+    block.add(new nova.component.renderer.ItemRenderer(block));
+
+    block.events.on(nova.block.Block.RightClickEvent["class"]).bind(function (evt) {
+      //if (networkManager.isServer()) {
+      evt.entity.world().addEntity(entityManager.getFactory("Condensed Explosive").get()).setPosition(block.position().add(new Vector3D(0.5, 0.5, 0.5)));
+
+      evt.entity.world().removeBlock(block.position());
+      //}
+    });
+
+    return block;
+  });
+
+  entityManager.register(function () {
+    var EntityExplosive = Java.extend(nova.entity.JSEntity, {
+      time: 0,
+      update: function update(deltaTime) {
+        this.time += deltaTime;
+        if (this.time >= 1) {
+          if (networkManager.isServer()) {
+            new Explosion(entity.world(), entity.position(), 3).doExplosion();
+          }
+          entity.world().removeEntity(entity);
+        }
+      }
+    });
+
+    var entity = new EntityExplosive("Condensed Explosive");
+
+    entity.add(new nova.component.renderer.DynamicRenderer()).onRender(function (model) {
+      blockManager.get("Condensed Explosive").get().get(nova.component.renderer.StaticRenderer["class"]).onRender.accept(model);
+    });
+
+    entity.add(new nova.component.misc.Collider(entity));
+    entity.add(componentManager.make(nova.entity.component.RigidBody["class"], entity));
+    return entity;
+  });
+
+  var codensedExplosive = itemManager.getItem("Condensed Explosive").get().makeItem();
+  recipeManager.addRecipe(new nova.recipes.crafting.ShapelessCraftingRecipe(codensedExplosive, [nova.recipes.crafting.ItemIngredient.forItem("minecraft:redstone"), nova.recipes.crafting.ItemIngredient.forItem("minecraft:tnt")]));
+}
