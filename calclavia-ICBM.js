@@ -16,6 +16,8 @@ var Explosion = (function () {
   _createClass(Explosion, [{
     key: "doExplosion",
     value: function doExplosion() {
+      var _this = this;
+
       for (var x = -this.strength; x < this.strength; x++) {
         for (var y = -this.strength; y < this.strength; y++) {
           for (var z = -this.strength; z < this.strength; z++) {
@@ -23,8 +25,8 @@ var Explosion = (function () {
 
             if (checkPos.distance(this.position) <= this.strength) {
               this.world.removeBlock(Vector3DUtil.floor(checkPos));
-              this.world.addClientEntity(entityManager.getFactory("minecraft:smoke").get()).setPosition(checkPos);
-              this.world.addClientEntity(entityManager.getFactory("minecraft:explode").get()).setPosition(checkPos);
+              this.world.addClientEntity(entityManager.get("minecraft:smoke").get()).setPosition(checkPos);
+              this.world.addClientEntity(entityManager.get("minecraft:explode").get()).setPosition(checkPos);
             }
           }
         }
@@ -34,7 +36,7 @@ var Explosion = (function () {
       this.world.getEntities(nova.util.shape.Cuboid.ONE.expand(this.strength).add(this.position)).forEach(function (entity) {
         print("Found entity: " + entity);
         if (entity.has(nova.component.misc.Damageable["class"])) {
-          entity.get(nova.component.misc.Damageable["class"]).damage(this.strength);
+          entity.get(nova.component.misc.Damageable["class"]).damage(_this.strength);
         }
       });
 
@@ -42,7 +44,7 @@ var Explosion = (function () {
       this.world.playSoundAtPosition(this.position, new nova.sound.Sound("icbm", "explode-small").withVolume(2));
 
       //Spawn particles
-      this.world.addClientEntity(entityManager.getFactory("minecraft:largeexplode").get()).setPosition(this.position);
+      this.world.addClientEntity(entityManager.get("minecraft:largeexplode").get()).setPosition(this.position);
     }
   }]);
 
@@ -75,11 +77,11 @@ function preInit() {
     block.add(new nova.component.renderer.ItemRenderer(block));
 
     block.events.on(nova.block.Block.RightClickEvent["class"]).bind(function (evt) {
-      //if (networkManager.isServer()) {
-      evt.entity.world().addEntity(entityManager.getFactory("Condensed Explosive").get()).setPosition(block.position().add(new Vector3D(0.5, 0.5, 0.5)));
+      if (networkManager.isServer()) {
+        evt.entity.world().addEntity(entityManager.get("Condensed Explosive").get()).setPosition(block.position().add(new Vector3D(0.5, 0.5, 0.5)));
 
-      evt.entity.world().removeBlock(block.position());
-      //}
+        evt.entity.world().removeBlock(block.position());
+      }
     });
 
     return block;
@@ -90,7 +92,7 @@ function preInit() {
       time: 0,
       update: function update(deltaTime) {
         this.time += deltaTime;
-        if (this.time >= 1) {
+        if (this.time >= 5) {
           if (networkManager.isServer()) {
             new Explosion(entity.world(), entity.position(), 3).doExplosion();
           }
@@ -102,14 +104,14 @@ function preInit() {
     var entity = new EntityExplosive("Condensed Explosive");
 
     entity.add(new nova.component.renderer.DynamicRenderer()).onRender(function (model) {
-      blockManager.get("Condensed Explosive").get().get(nova.component.renderer.StaticRenderer["class"]).onRender.accept(model);
+      blockManager.get("Condensed Explosive").get().build().get(nova.component.renderer.StaticRenderer["class"]).onRender.accept(model);
     });
 
-    entity.add(new nova.component.misc.Collider(entity));
-    entity.add(componentManager.make(nova.entity.component.RigidBody["class"], entity));
+    entity.add(new nova.component.misc.Collider(entity)).setBoundingBox(new nova.util.shape.Cuboid(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5));
+    entity.add(nova.entity.component.RigidBody["class"]);
     return entity;
   });
 
-  var codensedExplosive = itemManager.getItem("Condensed Explosive").get().makeItem();
+  var codensedExplosive = itemManager.get("Condensed Explosive").get().build();
   recipeManager.addRecipe(new nova.recipes.crafting.ShapelessCraftingRecipe(codensedExplosive, [nova.recipes.crafting.ItemIngredient.forItem("minecraft:redstone"), nova.recipes.crafting.ItemIngredient.forItem("minecraft:tnt")]));
 }
