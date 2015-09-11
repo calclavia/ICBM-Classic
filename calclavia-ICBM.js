@@ -63,12 +63,12 @@ function preInit() {
   renderManager.registerTexture(textureExplosiveSide);
   renderManager.registerTexture(textureExplosiveTop);
 
-  blockManager.register(function () {
-    var block = new nova.block.JSBlock("Condensed Explosive");
+  blockManager.register("Condensed Explosive", function () {
+    var block = new nova.block.Block();
 
     block.add(new nova.component.Category("ICBM"));
 
-    block.add(new nova.component.renderer.StaticRenderer()).onRender(new nova.render.pipeline.BlockRenderStream(block).withTexture(function (side) {
+    block.add(new nova.component.renderer.StaticRenderer()).onRender(new nova.render.pipeline.BlockRenderPipeline(block).withTexture(function (side) {
       if (side == nova.util.Direction.UP) return Optional.of(textureExplosiveTop);
       if (side == nova.util.Direction.DOWN) return Optional.of(textureExplosiveBottom);
       return Optional.of(textureExplosiveSide);
@@ -87,8 +87,8 @@ function preInit() {
     return block;
   });
 
-  entityManager.register(function () {
-    var EntityExplosive = Java.extend(nova.entity.JSEntity, {
+  entityManager.register("Condensed Explosive", function () {
+    var EntityExplosive = Java.extend(nova.entity.Entity, {
       time: 0,
       update: function update(deltaTime) {
         this.time += deltaTime;
@@ -101,7 +101,7 @@ function preInit() {
       }
     });
 
-    var entity = new EntityExplosive("Condensed Explosive");
+    var entity = new EntityExplosive();
 
     entity.add(new nova.component.renderer.DynamicRenderer()).onRender(function (model) {
       blockManager.get("Condensed Explosive").get().build().get(nova.component.renderer.StaticRenderer["class"]).onRender.accept(model);
