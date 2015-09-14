@@ -16,9 +16,9 @@ function preInit() {
     function() {
       const block = new nova.block.Block();
 
-      block.add(new nova.component.Category("ICBM"));
+      block.components.add(new nova.component.Category("ICBM"));
 
-      block
+      block.components
         .add(new nova.component.renderer.StaticRenderer())
         .onRender(
           new nova.render.pipeline.BlockRenderPipeline(block)
@@ -32,7 +32,7 @@ function preInit() {
           .build()
         );
 
-      block.add(new nova.component.renderer.ItemRenderer(block));
+      block.components.add(new nova.component.renderer.ItemRenderer(block));
 
       block.events
         .on(nova.block.Block.RightClickEvent.class)
@@ -68,7 +68,7 @@ function preInit() {
 
       const entity = new EntityExplosive();
 
-      entity
+      entity.components
         .add(new nova.component.renderer.DynamicRenderer())
         .onRender(function(model) {
           blockManager
@@ -80,10 +80,10 @@ function preInit() {
             .accept(model);
         });
 
-      entity
+      entity.components
         .add(new nova.component.misc.Collider(entity))
         .setBoundingBox(new nova.util.shape.Cuboid(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5));
-      entity.add(nova.entity.component.RigidBody.class);
+      entity.components.add(nova.entity.component.RigidBody.class);
       return entity;
     }
   );

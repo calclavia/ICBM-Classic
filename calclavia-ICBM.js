@@ -66,15 +66,15 @@ function preInit() {
   blockManager.register("Condensed Explosive", function () {
     var block = new nova.block.Block();
 
-    block.add(new nova.component.Category("ICBM"));
+    block.components.add(new nova.component.Category("ICBM"));
 
-    block.add(new nova.component.renderer.StaticRenderer()).onRender(new nova.render.pipeline.BlockRenderPipeline(block).withTexture(function (side) {
+    block.components.add(new nova.component.renderer.StaticRenderer()).onRender(new nova.render.pipeline.BlockRenderPipeline(block).withTexture(function (side) {
       if (side == nova.util.Direction.UP) return Optional.of(textureExplosiveTop);
       if (side == nova.util.Direction.DOWN) return Optional.of(textureExplosiveBottom);
       return Optional.of(textureExplosiveSide);
     }).build());
 
-    block.add(new nova.component.renderer.ItemRenderer(block));
+    block.components.add(new nova.component.renderer.ItemRenderer(block));
 
     block.events.on(nova.block.Block.RightClickEvent["class"]).bind(function (evt) {
       if (networkManager.isServer()) {
@@ -103,12 +103,12 @@ function preInit() {
 
     var entity = new EntityExplosive();
 
-    entity.add(new nova.component.renderer.DynamicRenderer()).onRender(function (model) {
+    entity.components.add(new nova.component.renderer.DynamicRenderer()).onRender(function (model) {
       blockManager.get("Condensed Explosive").get().build().get(nova.component.renderer.StaticRenderer["class"]).onRender.accept(model);
     });
 
-    entity.add(new nova.component.misc.Collider(entity)).setBoundingBox(new nova.util.shape.Cuboid(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5));
-    entity.add(nova.entity.component.RigidBody["class"]);
+    entity.components.add(new nova.component.misc.Collider(entity)).setBoundingBox(new nova.util.shape.Cuboid(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5));
+    entity.components.add(nova.entity.component.RigidBody["class"]);
     return entity;
   });
 
