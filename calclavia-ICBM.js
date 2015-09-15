@@ -104,7 +104,7 @@ function preInit() {
     var entity = new EntityExplosive();
 
     entity.components.add(new nova.component.renderer.DynamicRenderer()).onRender(function (model) {
-      blockManager.get("Condensed Explosive").get().build().get(nova.component.renderer.StaticRenderer["class"]).onRender.accept(model);
+      blockManager.get("Condensed Explosive").get().build().components.get(nova.component.renderer.StaticRenderer["class"]).onRender.accept(model);
     });
 
     entity.components.add(new nova.component.misc.Collider(entity)).setBoundingBox(new nova.util.shape.Cuboid(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5));

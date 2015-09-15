@@ -75,6 +75,7 @@ function preInit() {
             .get("Condensed Explosive")
             .get()
             .build()
+            .components
             .get(nova.component.renderer.StaticRenderer.class)
             .onRender
             .accept(model);
