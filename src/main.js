@@ -7,12 +7,15 @@ function main() {
   const textureExplosiveSide = new nova.render.texture.BlockTexture("icbm", "explosive_condensed_side");
   const textureExplosiveTop = new nova.render.texture.BlockTexture("icbm", "explosive_condensed_top");
 
+  const textureGrenadeCondensed = new nova.render.texture.ItemTexture("icbm", "grenade_condensed");
+
   events
     .on(RenderManager.Init.class)
     .bind(evt => {
       renderManager.registerTexture(textureExplosiveBottom);
       renderManager.registerTexture(textureExplosiveSide);
       renderManager.registerTexture(textureExplosiveTop);
+      renderManager.registerTexture(textureGrenadeCondensed);
     });
 
   events
@@ -98,6 +101,25 @@ function main() {
         }
       )
     );
+
+  events
+    .on(ItemManager.Init.class)
+    .bind(evt => {
+      itemManager.register("Condensed Grenade", () => {
+        const item = new Item();
+        item.components.add(new nova.component.Category("ICBM"));
+
+        item.components
+          .add(new ItemRenderer())
+          .setTexture(textureGrenadeCondensed);
+
+        item.events
+          .on(Item.RightClickEvent.class)
+          .bind(evt => new Explosion(evt.entity.world(), evt.entity.position(), 3).doExplosion());
+
+        return item;
+      })
+    })
 
   events
     .on(RecipeManager.Init.class)

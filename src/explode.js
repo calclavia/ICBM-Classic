@@ -24,18 +24,20 @@ export default class Explosion {
       }
     }
 
-    //Damage entities
-    this.world
-      .getEntities(nova.util.shape.Cuboid.ONE.expand(this.strength).add(this.position))
-      .forEach((entity) => {
-        print("Found entity: " + entity);
-        if (entity.has(nova.component.misc.Damageable.class)) {
-          entity
-            .get(nova.component.misc.Damageable.class)
-            .damage(this.strength);
-        }
-      });
-
+    if (networkManager.isServer()) {
+      //Damage entities
+      this.world
+        .getEntities(nova.util.shape.Cuboid.ONE.expand(this.strength).add(this.position))
+        .forEach((entity) => {
+          print("Found entity: " + entity);
+          if (entity.components.has(nova.component.misc.Damageable.class)) {
+            entity.components
+              .get(nova.component.misc.Damageable.class)
+              .damage(this.strength);
+          }
+        });
+    }
+    
     //Play sound effect
     this.world.playSoundAtPosition(this.position, new nova.sound.Sound("icbm", "explode-small").withVolume(2));
 

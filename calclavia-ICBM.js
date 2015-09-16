@@ -32,13 +32,15 @@ var Explosion = (function () {
         }
       }
 
-      //Damage entities
-      this.world.getEntities(nova.util.shape.Cuboid.ONE.expand(this.strength).add(this.position)).forEach(function (entity) {
-        print("Found entity: " + entity);
-        if (entity.has(nova.component.misc.Damageable["class"])) {
-          entity.get(nova.component.misc.Damageable["class"]).damage(_this.strength);
-        }
-      });
+      if (networkManager.isServer()) {
+        //Damage entities
+        this.world.getEntities(nova.util.shape.Cuboid.ONE.expand(this.strength).add(this.position)).forEach(function (entity) {
+          print("Found entity: " + entity);
+          if (entity.components.has(nova.component.misc.Damageable["class"])) {
+            entity.components.get(nova.component.misc.Damageable["class"]).damage(_this.strength);
+          }
+        });
+      }
 
       //Play sound effect
       this.world.playSoundAtPosition(this.position, new nova.sound.Sound("icbm", "explode-small").withVolume(2));
@@ -59,10 +61,13 @@ function main() {
   var textureExplosiveSide = new nova.render.texture.BlockTexture("icbm", "explosive_condensed_side");
   var textureExplosiveTop = new nova.render.texture.BlockTexture("icbm", "explosive_condensed_top");
 
+  var textureGrenadeCondensed = new nova.render.texture.ItemTexture("icbm", "grenade_condensed");
+
   events.on(RenderManager.Init["class"]).bind(function (evt) {
     renderManager.registerTexture(textureExplosiveBottom);
     renderManager.registerTexture(textureExplosiveSide);
     renderManager.registerTexture(textureExplosiveTop);
+    renderManager.registerTexture(textureGrenadeCondensed);
   });
 
   events.on(BlockManager.Init["class"]).bind(function (evt) {
@@ -115,6 +120,21 @@ function main() {
       entity.components.add(new nova.component.misc.Collider(entity)).setBoundingBox(new nova.util.shape.Cuboid(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5));
       entity.components.add(nova.entity.component.RigidBody["class"]);
       return entity;
+    });
+  });
+
+  events.on(ItemManager.Init["class"]).bind(function (evt) {
+    itemManager.register("Condensed Grenade", function () {
+      var item = new Item();
+      item.components.add(new nova.component.Category("ICBM"));
+
+      item.components.add(new ItemRenderer()).setTexture(textureGrenadeCondensed);
+
+      item.events.on(Item.RightClickEvent["class"]).bind(function (evt) {
+        return new Explosion(evt.entity.world(), evt.entity.position(), 3).doExplosion();
+      });
+
+      return item;
     });
   });
 
